@@ -1,0 +1,42 @@
+services:
+
+  common-experiments-agent-wc1-http:
+    build:
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - common-otel-collector
+    environment:
+      SERVICE_NAME: agent-wc
+      APP_PORT: "9292"
+      HTTP_OR_GRPC: "http"
+    ports:
+      - "9292:9292"
+
+  common-experiments-agent-wc2-grpc:
+    build:
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - common-otel-collector
+    environment:
+      SERVICE_NAME: agent-wc2
+      APP_PORT: "9293"
+      HTTP_OR_GRPC: "grpc"
+    ports:
+      - "9293:9293"
+
+  common-otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.105.0-amd64
+    ports:
+      - "13133:13133"
+      - "4317:4317"
+      - "4318:4318"
+      - "8888:8888"
+      - "8889:8889"
+    volumes:
+      - ./otel-collector/etc/otelcol-contrib:/etc/otelcol-contrib
